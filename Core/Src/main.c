@@ -322,27 +322,35 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 	{
 		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_0);
+		HAL_UART_Transmit(&huart1, &byte, sizeof(byte),100);
+
 
 	}
 
 
-	if (byte == COMMAND_LED2_TOGGLE)
+	else if (byte == COMMAND_LED2_TOGGLE)
 
 	{
 		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_2);
+		HAL_UART_Transmit(&huart1, &byte, sizeof(byte),100);
+
 	}
 
-	if (byte == COMMAND_LED3_TOGGLE)
+	else if (byte == COMMAND_LED3_TOGGLE)
 	{
 		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15);
+		HAL_UART_Transmit(&huart1, &byte, sizeof(byte),100);
+
 	}
 
-	if (byte = COMMAND_LED4_TOGGLE)
+	else if (byte = COMMAND_LED4_TOGGLE)
 	{
 		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
+		HAL_UART_Transmit(&huart1, &byte, sizeof(byte),100);
+
 	}
 
-	HAL_UART_Receive_IT(&huart1, &byte, 1);  /*Vuelve a habilitar UART para próximo mensaje*/
+	HAL_UART_Receive_IT(&huart1, &byte, 1); /*Vuelve a habilitar UART para próximo mensaje*/
 }
 
 
