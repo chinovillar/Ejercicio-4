@@ -31,7 +31,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define RETARDO_DEBOUNCE 50
+#define RETARDO_DEBOUNCE 15
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -277,10 +277,14 @@ uint8_t estado_actual = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1);
 		}
 	if (estado_actual == estado_pulsador){
 
-		HAL_UART_Transmit(&huart1, mensaje2, sizeof(mensaje2),100);
-		Boton_N=0;
-		contador= 0;
+		contador = contador+1;
+		if(contador >= RETARDO_DEBOUNCE)
+		{
+			HAL_UART_Transmit(&huart1, mensaje2, sizeof(mensaje2),100);
+			Boton_N=0;
+			contador= 0;
 		}
+	}
 	}
 
 if(Boton_N == 8){
@@ -300,12 +304,15 @@ uint8_t estado_actual = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3);
 			}
 
 		}
-		else {
-		HAL_UART_Transmit(&huart1, mensaje4, sizeof(mensaje4),100);
-		Boton_N=0;
-		contador=0;
-
+		if (estado_actual == estado_pulsador){
+		contador = contador+1;
+		if(contador >= RETARDO_DEBOUNCE)
+		{
+			HAL_UART_Transmit(&huart1, mensaje4, sizeof(mensaje4),100);
+			Boton_N=0;
+			contador=0;
 		}
+}
 }
 }
 

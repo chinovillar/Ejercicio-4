@@ -5,6 +5,6 @@
 ../Core/Src/main.c:169:13:MX_USART1_UART_Init	2
 ../Core/Src/main.c:202:13:MX_GPIO_Init	1
 ../Core/Src/main.c:251:6:HAL_GPIO_EXTI_Callback	1
-../Core/Src/main.c:256:6:SysTick_Handler	8
-../Core/Src/main.c:312:6:HAL_UART_RxCpltCallback	4
-../Core/Src/main.c:349:6:Error_Handler	1
+../Core/Src/main.c:256:6:SysTick_Handler	11
+../Core/Src/main.c:319:6:HAL_UART_RxCpltCallback	4
+../Core/Src/main.c:356:6:Error_Handler	1
