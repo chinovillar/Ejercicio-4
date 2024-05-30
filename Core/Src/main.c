@@ -31,7 +31,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define RETARDO_DEBOUNCE 15
+#define RETARDO_DEBOUNCE 15 //Definición de retardo para debounce de 15 milisegundos.
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -43,16 +43,20 @@
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-uint32_t Boton_N;
-bool estado_pulsador=1;
+uint32_t Boton_N;           //Variable para determinar el pulsador que causó la interrupción
+bool estado_pulsador=1;     //Booleano que establece el estado predeterminado del pulsador
 uint32_t contador=0;
+
+//Mensajes a enviar por UART//
 uint8_t mensaje1[20]= "Tecla1: presionada\r\n";
 uint8_t mensaje2[20]= "Tecla1: soltada\r\n";
 uint8_t mensaje3[20]= "Tecla2: presionada\r\n";
 uint8_t mensaje4[20]= "Tecla2: soltada\r\n";
 
 
-uint8_t byte;
+uint8_t byte; //Variable para reicbir mensaje por UART
+
+//comandos que recibie la UART//
 
 typedef enum commandsEnum
 { COMMAND_LED1_TOGGLE = 'a',
@@ -248,25 +252,24 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) //Interrupción externa accionada por el pulsador.
 {
-	Boton_N = GPIO_Pin;
+	Boton_N = GPIO_Pin;      //Asignar a la variable el pin que activó la interrupción.
 }
 
-void SysTick_Handler(void)
+void SysTick_Handler(void)   //Interrupción disparada cada milisegundo.
 {
 
 
-if(Boton_N == 2){
-uint8_t estado_actual = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1);
+if(Boton_N == 2){ //En caso de que el pin A1 haya sido el que ocasionó la interrupción.
+uint8_t estado_actual = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1);  //Lectura de estado de entrada
 
 
-	if(estado_actual != estado_pulsador)
+	if(estado_actual != estado_pulsador)   //Función de Debounce
 	{
 		contador = contador+1;
 		if(contador >= RETARDO_DEBOUNCE)
 		{
-			/*HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_0);*/
 
 			HAL_UART_Transmit(&huart1, mensaje1, sizeof(mensaje1),100);
 			contador= 0;
@@ -275,7 +278,7 @@ uint8_t estado_actual = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1);
 		}
 
 		}
-	if (estado_actual == estado_pulsador){
+	if (estado_actual == estado_pulsador){ //Función de Debounce
 
 		contador = contador+1;
 		if(contador >= RETARDO_DEBOUNCE)
@@ -287,16 +290,15 @@ uint8_t estado_actual = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1);
 	}
 	}
 
-if(Boton_N == 8){
+if(Boton_N == 8){  //En caso de que el pin A3 haya sido el que ocasionó la interrupción.
 uint8_t estado_actual = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3);
 
 
-		if(estado_actual != estado_pulsador)
+		if(estado_actual != estado_pulsador) //Función de Debounce
 		{
 			contador = contador+1;
 			if(contador == RETARDO_DEBOUNCE)
 			{
-				/*HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_2);*/
 				HAL_UART_Transmit(&huart1, mensaje3, sizeof(mensaje3),100);
 				contador=0;
 				estado_pulsador= 1;
@@ -304,7 +306,7 @@ uint8_t estado_actual = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3);
 			}
 
 		}
-		if (estado_actual == estado_pulsador){
+		if (estado_actual == estado_pulsador){ //Función de Debounce
 		contador = contador+1;
 		if(contador >= RETARDO_DEBOUNCE)
 		{
@@ -316,13 +318,13 @@ uint8_t estado_actual = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3);
 }
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) //Interrupción de UART que recibe los comandos
 {
 	if (byte == COMMAND_LED1_TOGGLE)
 
 	{
 		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_0);
-		HAL_UART_Transmit(&huart1, &byte, sizeof(byte),100);
+		HAL_UART_Transmit(&huart1, &byte, sizeof(byte),100); //Transmisión de UART que devuelve lo que recibió para visualizar tecla presionada
 
 
 	}
@@ -332,25 +334,28 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 	{
 		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_2);
-		HAL_UART_Transmit(&huart1, &byte, sizeof(byte),100);
+		HAL_UART_Transmit(&huart1, &byte, sizeof(byte),100); //Transmisión de UART que devuelve lo que recibió para visualizar tecla presionada
+
 
 	}
 
 	else if (byte == COMMAND_LED3_TOGGLE)
 	{
 		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_15);
-		HAL_UART_Transmit(&huart1, &byte, sizeof(byte),100);
+		HAL_UART_Transmit(&huart1, &byte, sizeof(byte),100); //Transmisión de UART que devuelve lo que recibió para visualizar tecla presionada
+
 
 	}
 
 	else if (byte = COMMAND_LED4_TOGGLE)
 	{
 		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
-		HAL_UART_Transmit(&huart1, &byte, sizeof(byte),100);
+		HAL_UART_Transmit(&huart1, &byte, sizeof(byte),100); //Transmisión de UART que devuelve lo que recibió para visualizar tecla presionada
+
 
 	}
 
-	HAL_UART_Receive_IT(&huart1, &byte, 1); /*Vuelve a habilitar UART para próximo mensaje*/
+	HAL_UART_Receive_IT(&huart1, &byte, 1); /*Vuelve a habilitar UART para recibir próximo mensaje*/
 }
 
 
